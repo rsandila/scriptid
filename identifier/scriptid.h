@@ -35,4 +35,15 @@ USA.
  */
 extern "C" int identify( char *libdir, char *language, char *file, int verbose );
 
+/*
+  This function is used to determine whether a file is a text file or not. It can
+  be used to filter files before identify is called
+  Parameters:
+    fname - The full path to the file to be checked
+ Return Values:
+     0 - Not text
+     1 - Text 
+    -1 - Error 
+ */
+extern "C" int isTextFile( char *fname );
 #endif

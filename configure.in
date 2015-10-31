@@ -10,7 +10,7 @@ AC_SUBST(VERSION)
 
 dnl Set values
 PROJECTNAME="scriptid"
-VERSION="0.0.1"
+VERSION="0.0.2"
 
 dnl Test compilers
 AC_LANG_CPLUSPLUS
@@ -43,6 +43,8 @@ AC_PATH_PROG(FASTDEP, fastdep, [])
 if test "$FASTDEP" = ""; then
  AC_ERROR( You need fastdep in the path to be able to build this project )
 fi
+
+AC_ARG_ENABLE(timing, [--enable-timing - This makes the learn process print out NN Mflops and time per learn cycle.], [CPPFLAGS="$CPPFLAGS -D__TIMING__"],[])
 
 dnl Do the final stuff
 AC_OUTPUT($makefilelist

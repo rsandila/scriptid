@@ -6,5 +6,6 @@ TODO
          speed reasons and -t after learning has occured. This will
          not be fixed.
 02212003.02 - nn/learn reports grossly incorect NN Mflops per cycle.
+02252003.01 - nn/learn can corrupt temp.nnw when stopped.
 DONE
 ----

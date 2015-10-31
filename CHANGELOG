@@ -1,3 +1,7 @@
+* Wed Feb 26 2003 Robert Sandilands <rsandila@netscape.net>
+- Added some .asp samples for accurate .asp detection
+- Added detection of text files to scriptid utility
+- Added API function in libraries to detect text files
 * Fri Feb 21 2003 Robert Sandilands <rsandila@netscape.net>
 - Initial Release
 

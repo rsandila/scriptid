@@ -209,8 +209,9 @@ int learn_net( float **inp, int num_input, float *outp, char *fname )
   float tot_err, min_err;
   int learn_cycle, learn_item, find_iter;
   float last_error;
+#ifdef __TIMING__
   clock_t start, end;
-
+#endif
   last_error=1.0;
   tot_err=2.0;
   nnwork trainer( INPUT_SIZE, MIDDLE_SIZE, OUTPUT_SIZE );
@@ -227,7 +228,9 @@ int learn_net( float **inp, int num_input, float *outp, char *fname )
   min_err=-1;
   do
     {
+#ifdef __TIMING__
       start=clock();
+#endif
 #ifdef __RANDOM_ORDER__
       if (used) delete []used;
       used=new int[num_input];
@@ -283,21 +286,29 @@ int learn_net( float **inp, int num_input, float *outp, char *fname )
       //	}
       if (min_err==-1) min_err=tot_err;
       //      std::cout << std::endl;
+#ifdef __TIMING__
       end = clock();
+#endif
       std::cout << "Learn Cycle: " << ++learn_cycle;
+#ifdef __TIMING__
       std::cout << " Time: " << (float)(end - start)/(float)CLOCKS_PER_SEC;
       std::cout << " NN Mflops: " << (float)(num_input)*(float)(MIDDLE_SIZE+1)*(float)INPUT_SIZE*(float)CLOCKS_PER_SEC/((float)(end - start)*1e6);
+#endif
       std::cout << " Error: " << tot_err;
       std::cout << std::endl;
+#ifdef __TIMING__
       start = clock();
+#endif
       trainer.save( "temp.nnw" );
       if (min_err>tot_err)
 	{
 	  trainer.save( "min.nnw" );
 	  min_err=tot_err;
 	}
+#ifdef __TIMING__
       end = clock();
       //      std::cout << "Saving .nnw files " << (float)(end - start)/(float)CLOCKS_PER_SEC << std::endl; 
+#endif
       //      getchar();
     } while (tot_err>1 || isnan(tot_err));
   trainer.save( "learn.nnw" );

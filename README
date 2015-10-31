@@ -72,6 +72,9 @@ this project. It can be found in the file DEPENDS.
 
 9. Compiling
 ------------
+Check http://rsandila.webhop.org/scriptid.html for the latest version of all
+the files.
+
 To compile first run "autoconf" in the main directory. Then run
 "./configure". Then run "make".
 
@@ -121,10 +124,6 @@ If --id is provided it will load the specified file and use the neural
 network to identify it either as script or as text. In this mode it
 will return 0 for a text file, 1 for a script and anything else for an error.
 
-Scriptid does not verify whether any file passed to it is text or
-not. So it would be wise to use a program like 'file' to verify that
-first.
-
 11.2. libscriptid
 -----------------
 The dynamic and static version of this library can be found under
@@ -150,6 +149,19 @@ The constants "scriptid_default_lib_dir" or
 "scriptid_default_language" can be used as parameters to the 'libdir'
 and 'language' parameters. All the data files should be under
 "/usr/local/lib/scriptid". 
+
+extern "C" int isTextFile( char *fname );
+
+This function is used to determine whether a file is a text file or not.
+It can be used to filter files before identify is called
+
+  Parameters:
+    fname - The full path to the file to be checked
+
+ Return Values:
+     0 - Not text
+     1 - Text
+    -1 - Error
 
 The function definitions can be found in scriptid.h which can be found
 in /usr/local/include.

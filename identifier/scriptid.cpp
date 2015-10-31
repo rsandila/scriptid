@@ -164,6 +164,28 @@ extern "C" int identify( char *libdir, char *language, char *file, int verbose )
   return( result );
 }
 
+extern "C" int isTextFile( char *fname )
+{ // If less than 20% of the first 1kB is ascii it is a text file, otherwise binary
+  FILE *inp;
+  char buf[1024];
+  int read, cnt, total;
+
+  if (!fname) return( -1 );
+  inp=fopen( fname, "rb" );
+  if (!inp) return( -1 );
+  read=fread( buf, 1, 1024, inp );
+  fclose( inp );
+  if (read<0) return( -1 );
+  if (!read) return( 0 );
+  for (total=0,cnt=0;cnt<read;cnt++)
+    {
+      if (isupper( buf[cnt] ) || islower( buf[cnt] ) || isspace( buf[cnt] ) || ispunct( buf[cnt] ) || 
+	  isdigit( buf[cnt] )) total+=1;
+    }
+  if (((float)total/(float)read)<0.8) return( 0 );
+  return( 1 );
+}
+
 
 
 

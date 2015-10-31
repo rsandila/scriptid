@@ -125,6 +125,12 @@ int main( int argc, char **argv )
   if (stat)
     {
       stats *sid;
+      result=isTextFile( stat );
+      if (result<=0)
+	{
+	  std::cerr << stat << " is not a text file or does not exist." << std::endl;
+	  return( 3 );
+	}
       sid=initialize( libdir, language, stat, 1 );
       if (!sid)
 	{
@@ -141,6 +147,17 @@ int main( int argc, char **argv )
     }
   if (id)
     {
+      result=isTextFile( id );
+      if (result<0)
+	{
+	  std::cerr << id << " does not exist." << std::endl;
+	  return( -1 );
+	}
+      if (!result)
+	{
+	  std::cerr << id << " is a binary file." << std::endl;
+	  return( 0 );
+	}
       result=identify( libdir, language, id, 1 );
       return( result );
     }
