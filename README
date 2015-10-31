@@ -1,0 +1,243 @@
+README for scriptid
+-------------------
+
+1. What is scriptid?
+2. Who should use it?
+3. License
+4. Guarantees
+5. Authors
+6. Known Bugs
+7. Changes
+8. Dependencies
+9. Compiling
+10. Installing
+11. Usage
+12. Scriptid made a mistake, what now?
+13. Concepts
+
+1. What is scriptid?
+--------------------
+Scriptid is a program and a library that can be used to determine
+whether a given text file contains code of a specified programming
+language.
+
+The current release can tell whether a file contains vbscript or
+not. It should be possible to extend this to any number of other
+languages.
+
+2. Who should use it?
+---------------------
+People that want to write plug-ins for anti-virus or content filtering
+programs to detect whether a file is vbscript (or any other type of
+script) or not. It can be used either as a C/C++ library or as a
+executable called from a script. It has not been specifically targeted
+to identify viruses, although that could theoretically be possible.
+
+3. License
+----------
+This software is released under the LGPL license as described in the
+file LICENSE.
+
+4. Guarantees
+-------------
+I have tested this software and it works for me. I can not take
+responsibility for what anybody does with this software and whether
+this software is fit or not for any purpose stated or not in any
+documents. It is as-is. If you break it, you get to keep all the
+pieces.
+
+5. Authors
+----------
+Please look at the AUTHORS file.
+
+Additional credit has to be given to Daniel Franklin
+(daniel@ieee.uow.edu.au) for his libneural 
+(URL: http://ieee.uow.edu.au/~daniel/software/libneural/). I modified
+his code for use in scriptid. I did some speed optimizations and
+modified the way the network learned to be of more use to my specific case.
+
+6. Known Bugs
+-------------
+Please look for the files named KNOWNBUGS distributed throughout the
+directory structure.
+
+7. Changes
+----------
+Any changes will be in the CHANGELOG file.
+
+8. Dependencies
+---------------
+This is projects, programs or libraries you need to compile or use
+this project. It can be found in the file DEPENDS.
+
+9. Compiling
+------------
+To compile first run "autoconf" in the main directory. Then run
+"./configure". Then run "make".
+
+10. Installing
+--------------
+After compiling run "make install". You need to have administrative
+privileges to run "make install". The default destination for scriptid
+is "/usr/local/bin", "/usr/local/lib", "/usr/local/include" and
+"/usr/local/lib/scriptid". If you want to use the neural network as
+provided then also do a "make install-nnw". Otherwise read the
+guidelines at the bottom of the document of how to train the neural
+network. It is not really necessary to do your own training except if
+you want to add your own data. This is not recommended.
+
+To remove scriptid run "make uninstall".
+
+NB: If you download from RPM's it is important to get the scriptid nnw
+    package too and install that before attempting to use scriptid.
+
+11. Usage
+---------
+11.1. scriptid Command Line Utility
+-----------------------------------
+NB: If you download from RPM's it is important to get the scriptid nnw
+    package too and install that before attempting to use scriptid.
+
+Parameters for program:
+
+   --stat file - Prints stats for file
+   --id   file - Identify file
+   --language name - Language name to use for identifying things 
+   --libdir name - Base directory for data files
+
+Either --stat or --id must always be defined. 
+
+If --language or --libdir is not defined it will assume some
+defaults. The default language is vbscript and the default libdir is
+/usr/local/lib/scriptid.
+
+If --stat is provided it will load the specified file and analyze
+it. It will print statistics about the file. If any files are badly 
+identified by this program I will either need a copy of the file, or
+if you do not want to share that file with me I need the complete
+output of the --stat command. In this mode it will return non-zero on error.
+
+If --id is provided it will load the specified file and use the neural
+network to identify it either as script or as text. In this mode it
+will return 0 for a text file, 1 for a script and anything else for an error.
+
+Scriptid does not verify whether any file passed to it is text or
+not. So it would be wise to use a program like 'file' to verify that
+first.
+
+11.2. libscriptid
+-----------------
+The dynamic and static version of this library can be found under
+/usr/local/lib. It exports one important function:
+
+extern "C" int identify( char *libdir, char *language, char *file, int
+ verbose );
+
+This function is used to identify a specific file as either script or plain text
+
+   Parameters:
+      libdir - The path to all the shared data files used by this class.
+      language - The name of the language to identify
+      file - The file to identify
+      verbose - 0 no error messages printed to std::cerr. 1 all messages printed.
+
+   Return Values:
+      0 - Text file
+      1 - Script file
+     -1 - Error
+
+The constants "scriptid_default_lib_dir" or
+"scriptid_default_language" can be used as parameters to the 'libdir'
+and 'language' parameters. All the data files should be under
+"/usr/local/lib/scriptid". 
+
+The function definitions can be found in scriptid.h which can be found
+in /usr/local/include.
+
+12. Scriptid made a mistake, what now?
+--------------------------------------
+If scriptid made a mistake there are three possible routes:
+
+1. Send me the file. I commit that that file will never be shared with
+   anyone.
+2. Send me the complete output of "scriptid --stat filename.vbs". 
+   Please include information on whether it is a
+   vbscript file or not. In this case I have to trust you. I will
+   treat these as they happen.
+3. Retrain the neural network yourself and share the vbscript.nnw file
+   created by "learn". This may mean that any time that vbscript.nnw
+   is updated by anyone else that you will have to retrain your
+   network and share again... Which may lead to some interesting
+   recursion. I would really like to avoid this situation.
+
+13. Concepts
+------------
+This started from the idea that every programming language has unique
+words and unique usage of words relative to any other programming
+language and a normal document like this README. I started by building
+a word list of reserved words which is stored in vbscript.words. I
+also took all possible symbols that could be used to separate reserved
+words, like ";", "+" etc. This I placed in vbscript.seperators. These
+contents I use to parse the target file to determine the ratio of
+specialized separators to normal separators like white space. I also
+calculate the ratios of reserved words to other words and generate a
+histogram of reserved words, normalized by the total number of
+reserved words. This is thrown at a neural network and out comes a
+neural net that can identify vbscript files.
+
+Please -NEVER- modify vbscript.words or vbscript.seperators without
+retraining the neural network. The effects will be weird at best.
+
+To train a neural network you need example files to work with. At this
+stage I have 25,000 of them. I do not intend to share these
+files. There are several reasons. The most important one is that I
+want to encourage people that find that scriptid made a mistake to
+share their files with me with the knowledge that I will not share it
+with anyone. If you want to do your own training of the neural net,
+then I can provide you with the data files containing all the
+statistics of the files. There is nothing in those files that will
+allow you to recreate the original file, but it does contain enough
+information to train the neural network.
+
+Neural networks are very complex curve fit algorithms. It allows you
+to take a small amount of data and extrapolate from that other
+data. This allows me to take a few vbscript files and use that to
+identify other vbscript files. For any of you that has used curve
+fitting in the past you will know that the technique is just as good
+as your sample points. It can make mistakes. My last test showed
+scriptid to be 96.6% accurate on totally unknown files. Obviously I
+want to improve that so I need to add badly identified files to the
+data set so that identification can be improved by additional learning.
+
+To train the neural network there is a directory called "nn". In it a
+program named "learn" is compiled. To learn do either "./learn -l" or
+"./learn -l temp.nnw" where the second parameter instructs the program
+to continue learning from a previously saved point. This is used to do
+the neural network learning. It loads the data from two files called
+"goodexample.csv" and "badexample.csv". The second file contains all
+the vbscript examples. These files are not distributed with the main
+distribution. They are available on request. The network can be asked
+to continue training at an earlier point. Every round a file called
+"temp.nnw" is saved to show the current status of the learning
+process. If a new lowest total error is detected a file "min.nnw" is
+also saved. If the total error ever decreases below 1.0 the program
+will exit and save a file called "learn.nnw". The neural network
+should work well for total errors larger than 1.0. You can use
+"./learn -t min.nnw" to look at the current status of the neural
+network. It will print "ERROR" next to any lines that it considers
+badly identified. It will also print a summary at the end to show the
+total error and the number of misidentified data points.
+
+The data files is just the output of "scriptid --stat filename" of all
+the sample files I have.
+
+For installation purposes you have to rename your best .nnw file to
+vbscript.nnw in the "nn" subdirectory.
+
+The current default is that the data is presented to the neural
+network in random order. This seems to provide for better learning
+speed from the network. But it does make it difficult to determine
+whether the network is learning or not, as the error total seems to
+jump around a lot. This can be especially confusing on training from
+scratch. There is a define at the top of learn.cpp that can be used to
+switch this behavior off.

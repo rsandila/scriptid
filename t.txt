@@ -1,0 +1,42 @@
+xs%define name scriptid-nnw
+%define version 0.0.1-2003-12-20-15-50
+%define release 1mdk
+
+Summary: Updated neural network weights for use by scriptid
+Name: %{name}
+Version: %{version}
+Release: %{release}
+Source0: %{name}-%{version}-2003-12-20-15-50.tar.bz2
+License: LGPL
+Group: System/Libraries
+BuildRoot: %{_tmppath}/%{name}-buildroot
+Prefix: %{_prefix}
+Requires: scriptid
+
+%description
+This updates scriptid with the latest neural network weights file.
+
+%prep
+%setup -q
+
+%build
+
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/usr/local/lib/scriptid
+cp learn.nnw $RPM_BUILD_ROOT/usr/local/lib/scriptid/vbscript.nnw
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%doc AUTHORS CHANGELOG LICENSE KNOWNBUGS README
+%dir /usr/local/lib/scriptid
+/usr/local/lib/scriptid/vbscript.nnw
+
+%changelog
+* Fri Feb 21 2003 Robert Sandilands <rsandila@netscape.net>
+- Initial Release
+
+# end of file

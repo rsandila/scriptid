@@ -1,0 +1,51 @@
+AC_INIT(data/vbscript.seperator)
+
+dnl Setup initial variables
+AC_SUBST(makefilelist)
+AC_SUBST(CPPFLAGS)
+AC_SUBST(LIBS)
+AC_SUBST(FASTDEP)
+AC_SUBST(PROJECTNAME)
+AC_SUBST(VERSION)
+
+dnl Set values
+PROJECTNAME="scriptid"
+VERSION="0.0.1"
+
+dnl Test compilers
+AC_LANG_CPLUSPLUS
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_ISC_POSIX
+AC_STDC_HEADERS
+AC_CHECK_HEADERS(map,[],AC_ERROR(You need the STL include files: map))
+AC_CHECK_HEADERS(iostream,[],AC_ERROR(You need the STL include files: iostream))
+AC_CHECK_HEADERS(iosfwd,[],AC_ERROR(You need the STL include files: iosfwd))
+AC_CHECK_HEADERS(fstream,[],AC_ERROR(You need the STL include files: fstream))
+AC_CHECK_HEADERS(string,[],AC_ERROR(You need the STL include files: string))
+AC_CHECK_HEADERS(vector,[],AC_ERROR(You need the STL include files: vector))
+AC_CHECK_HEADERS(search.h,[],AC_ERROR(You need the search.h include file))
+AC_CHECK_HEADERS(assert.h,[],AC_ERROR(You need the assert.h include file))
+AC_CHECK_HEADERS(time.h,[],AC_ERROR(You need the time.h include file))
+AC_CHECK_HEADERS(cstdlib,[],AC_ERROR(You need the STL include files: cstdlib))
+AC_CHECK_HEADERS(algorithm,[],AC_ERROR(You need the STL include files: algorithm))
+
+ACTIONS=[true]
+CPPFLAGS=["-g -O3 -fstrength-reduce -frerun-loop-opt -fexpensive-optimizations -funroll-loops"]
+
+dnl List of Makefiles
+makefilelist=["Makefile identifier/Makefile nn/Makefile data/Makefile scriptid.spec scriptid-nnw.spec.sed"]
+
+dnl Check for required programs
+AC_PATH_PROG(FASTDEP, fastdep, [])
+
+if test "$FASTDEP" = ""; then
+ AC_ERROR( You need fastdep in the path to be able to build this project )
+fi
+
+dnl Do the final stuff
+AC_OUTPUT($makefilelist
+	  ,
+	  [$ACTIONS],
+	  [ACTIONS=$ACTIONS])

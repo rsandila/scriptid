@@ -1,0 +1,25 @@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+ALL = 
+CPPFLAGS = -g @CPPFLAGS@
+LIBS = @LIBS@
+
+all: $(ALL)
+
+clean:
+	-rm *.core core.*
+	-rm *~
+
+dep:
+
+install:
+	-$(INSTALL) -d $(prefix)/lib/@PROJECTNAME@
+	$(INSTALL_DATA) vbscript.seperator $(prefix)/lib/@PROJECTNAME@/
+	$(INSTALL_DATA) vbscript.words $(prefix)/lib/@PROJECTNAME@/
+
+uninstall:
+	-rm -rf $(prefix)/lib/@PROJECTNAME@

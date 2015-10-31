@@ -1,0 +1,79 @@
+DATE=`date +%G_%m_%d_%H_%M`
+
+all:
+	$(MAKE) -C identifier $@
+	$(MAKE) -C nn $@
+	$(MAKE) -C data $@
+
+clean:
+	$(MAKE) -C identifier $@
+	$(MAKE) -C nn $@
+	$(MAKE) -C data $@
+
+dep:
+	$(MAKE) -C identifier $@
+	$(MAKE) -C nn $@
+	$(MAKE) -C data $@
+
+install-nnw:
+	$(MAKE) -C nn $@
+
+install:
+	$(MAKE) -C identifier $@
+	$(MAKE) -C nn $@
+	$(MAKE) -C data $@
+
+uninstall:
+	$(MAKE) -C identifier $@
+	$(MAKE) -C nn $@
+	$(MAKE) -C data $@
+
+really_clean: clean
+	-rm @makefilelist@
+	-rm configure config.cache config.status config.log
+	-rm *.core core.*
+	-rm *~
+	-rm -rf lib
+
+distrib-main:
+	-rm -rf $(HOME)/tmp/@PROJECTNAME@-@VERSION@/*
+	-rm -f $(HOME)/tmp/@PROJECTNAME@-@VERSION@.tar.bz2
+	-mkdir $(HOME)/tmp
+	-mkdir $(HOME)/tmp/@PROJECTNAME@-@VERSION@
+	-cp -R . $(HOME)/tmp/@PROJECTNAME@-@VERSION@
+	make -C $(HOME)/tmp/@PROJECTNAME@-@VERSION@ really_clean
+	-rm -rf $(HOME)/tmp/@PROJECTNAME@-@VERSION@/data/*
+	cp data/*.seperator $(HOME)/tmp/@PROJECTNAME@-@VERSION@/data/
+	cp data/*.words $(HOME)/tmp/@PROJECTNAME@-@VERSION@/data/
+	cp data/Makefile.in $(HOME)/tmp/@PROJECTNAME@-@VERSION@/data/
+	-rm -rf $(HOME)/tmp/@PROJECTNAME@-@VERSION@/nn/*.nnw
+	-rm -rf $(HOME)/tmp/@PROJECTNAME@-@VERSION@/nn/*.csv
+	find $(HOME)/tmp/@PROJECTNAME@-@VERSION@ -iname ".kdbgrc*" -exec rm {} \;
+	tar -C $(HOME)/tmp -cvjf $(HOME)/tmp/@PROJECTNAME@-@VERSION@.tar.bz2 @PROJECTNAME@-@VERSION@/.
+
+distrib-csv:
+	-mkdir $(HOME)/tmp
+	tar -C data -cvjf $(HOME)/tmp/@PROJECTNAME@-csv-@VERSION@-$(DATE).tar.bz2 badexample.csv goodexample.csv
+
+distrib-nnw:
+	-rm -rf $(HOME)/tmp/@PROJECTNAME@-nnw-@VERSION@
+	-mkdir -p $(HOME)/tmp/@PROJECTNAME@-nnw-@VERSION@
+	cp nn/min.nnw $(HOME)/tmp/@PROJECTNAME@-nnw-@VERSION@/learn.nnw
+	tar -C $(HOME)/tmp -cvjf $(HOME)/tmp/@PROJECTNAME@-nnw-@VERSION@-$(DATE).tar.bz2 @PROJECTNAME@-nnw-@VERSION@/.
+
+distrib: distrib-main distrib-csv distrib-nnw
+
+rpm-main: distrib-main
+	cp $(HOME)/tmp/@PROJECTNAME@-@VERSION@.tar.bz2 /usr/src/RPM/SOURCES
+	rpm -ba @PROJECTNAME@.spec
+
+rpm-nnw: distrib-nnw
+	cp $(HOME)/tmp/@PROJECTNAME@-nnw-@VERSION@-$(DATE).tar.bz2 /usr/src/RPM/SOURCES
+	cat scriptid-nnw.spec.sed | sed s/SEDDATE/$(DATE)/g > scriptid-nnw.spec
+	rpm -bb @PROJECTNAME@-nnw.spec
+	rm -f scriptid-nnw.spec
+
+rpms: rpm-main rpm-nnw
+
+
+

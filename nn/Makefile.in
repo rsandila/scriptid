@@ -1,0 +1,36 @@
+CPPFLAGS = @CPPFLAGS@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+ALL = learn
+
+all: $(ALL)
+
+clean:
+	-rm *.o $(ALL) core.* *.core *~ Makefile.dep *.txt
+
+dep: Makefile.dep
+
+Makefile.dep:
+	@FASTDEP@ *.cpp > Makefile.dep
+
+-include Makefile.dep
+
+learn: learn.o nnwork.o neuron.o
+	$(CXX) -o $@ $^
+
+learn.nnw: learn
+	echo Read README on how to learn Neural Network
+#	./learn -l 
+
+install-nnw: learn.nnw
+	-$(INSTALL) -d $(prefix)/lib/@PROJECTNAME@
+	$(INSTALL_DATA) learn.nnw $(prefix)/lib/@PROJECTNAME@/vbscript.nnw
+
+install:
+
+uninstall:
+	-rm -rf $(prefix)/lib/@PROJECTNAME@

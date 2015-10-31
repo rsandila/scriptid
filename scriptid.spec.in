@@ -1,0 +1,56 @@
+%define name @PROJECTNAME@
+%define version @VERSION@
+%define release 1mdk
+
+Summary: A program and library that can identify scripts.
+Name: %{name}
+Version: %{version}
+Release: %{release}
+Source0: %{name}-%{version}.tar.bz2
+License: LGPL
+Group: System/Libraries
+BuildRoot: %{_tmppath}/%{name}-buildroot
+Prefix: %{_prefix}
+BuildRequires: autoconf
+BuildRequires: fastdep
+
+%description
+Scriptid is a program and a library that can be used to determine
+whether a given text file contains code of a specified programming
+language.
+
+The current release can tell whether a file contains vbscript or
+not. It should be possible to extend this to any number of other
+languages.
+
+%prep
+%setup -q
+
+%build
+autoconf
+./configure --prefix $RPM_BUILD_ROOT/usr/local
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make install
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%doc AUTHORS CHANGELOG LICENSE KNOWNBUGS README
+%dir /usr/local/lib/@PROJECTNAME@
+/usr/local/lib/lib@PROJECTNAME@.a
+/usr/local/lib/lib@PROJECTNAME@.so
+/usr/local/include/@PROJECTNAME@.h
+/usr/local/bin/@PROJECTNAME@
+/usr/local/lib/@PROJECTNAME@/vbscript.words
+/usr/local/lib/@PROJECTNAME@/vbscript.seperator
+
+%changelog
+* Fri Feb 21 2003 Robert Sandilands <rsandila@netscape.net>
+- Initial Release
+
+# end of file

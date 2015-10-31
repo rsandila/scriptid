@@ -1,0 +1,55 @@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+ALL = parstest scriptid libscriptid.a libscriptid.so
+CPPFLAGS = @CPPFLAGS@
+LIBS = @LIBS@
+
+all: $(ALL)
+
+dep: Makefile.dep
+
+clean:
+	-rm *.core core.*
+	-rm *~ *.o $(ALL) Makefile.dep
+
+Makefile.dep: 
+	@FASTDEP@ -d --compile "\$$(CC) \$$(CPPFLAGS) -c -o \$$@" *.cpp ../nn/nnwork.cpp ../nn/neuron.cpp > Makefile.dep
+
+-include Makefile.dep
+
+scriptid: stats.o scriptid.o nnwork.o neuron.o parsefile.o reservedword.o seperator.o scriptcmd.o
+	$(CXX) -o $@ $^ $(LIBS)
+
+parstest: parstest.o parsefile.o reservedword.o seperator.o
+	$(CXX) -o $@ $^ @LIBS@
+
+libscriptid.a: stats.o scriptid.o nnwork.o neuron.o parsefile.o reservedword.o seperator.o
+	$(AR) rcv $@ $^
+
+libscriptid.so: stats.o scriptid.o nnwork.o neuron.o parsefile.o reservedword.o seperator.o
+	$(CXX) -shared -o $@ $^
+
+install: scriptid libscriptid.a libscriptid.so
+	-$(INSTALL) -d $(exec_prefix)/bin
+	$(INSTALL_PROGRAM) scriptid $(exec_prefix)/bin
+	-$(INSTALL) -d $(exec_prefix)/lib
+	$(INSTALL_PROGRAM) libscriptid.a $(exec_prefix)/lib
+	$(INSTALL_PROGRAM) libscriptid.so $(exec_prefix)/lib
+	-$(INSTALL) -d $(exec_prefix)/include
+	$(INSTALL_DATA) scriptid.h $(exec_prefix)/include
+	@echo ---------------------------------------------------------------
+	@echo --------------- IMPORTANT -------------------------------------
+	@echo -- Make sure that libscriptid.so is in your library search path
+	@echo -- Edit /etc/ld.so.conf and run \"ldconfig -a\" to verify and add
+	@echo -- $(exec_prefix)/lib. 
+	@echo --------------- IMPORTANT -------------------------------------
+	@echo ---------------------------------------------------------------
+
+uninstall:
+	-rm -f $(exec_prefix)/bin/scriptid
+	-rm -f $(exec_prefix)/lib/libscriptid.*
+	-rm -f $(exec_prefix)/include/scriptid.h

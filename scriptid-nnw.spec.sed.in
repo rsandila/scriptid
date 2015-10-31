@@ -1,0 +1,41 @@
+%define name @PROJECTNAME@-nnw
+%define version @VERSION@
+%define release SEDDATE
+
+Summary: Updated neural network weights for use by @PROJECTNAME@
+Name: %{name}
+Version: %{version}
+Release: %{release}
+Source0: %{name}-%{version}-SEDDATE.tar.bz2
+License: LGPL
+Group: System/Libraries
+BuildRoot: %{_tmppath}/%{name}-buildroot
+Prefix: %{_prefix}
+Requires: @PROJECTNAME@
+
+%description
+This updates @PROJECTNAME@ with the latest neural network weights file.
+
+%prep
+%setup -q
+
+%build
+
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/usr/local/lib/@PROJECTNAME@
+cp learn.nnw $RPM_BUILD_ROOT/usr/local/lib/@PROJECTNAME@/vbscript.nnw
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%dir /usr/local/lib/@PROJECTNAME@
+/usr/local/lib/@PROJECTNAME@/vbscript.nnw
+
+%changelog
+* Fri Feb 21 2003 Robert Sandilands <rsandila@netscape.net>
+- Initial Release
+
+# end of file

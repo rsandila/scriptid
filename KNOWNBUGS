@@ -1,0 +1,10 @@
+TODO
+----
+02212003.01 - nn/learn does not report the learning error consistently
+         between learn -l file and learn -t file. This is not really
+         an error as -l reports the error before learning occured for
+         speed reasons and -t after learning has occured. This will
+         not be fixed.
+02212003.02 - nn/learn reports grossly incorect NN Mflops per cycle.
+DONE
+----
