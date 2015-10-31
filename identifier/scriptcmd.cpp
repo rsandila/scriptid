@@ -18,6 +18,7 @@ USA.
  */
 #include "scriptid.h"
 #include "stats.h"
+#include "../version.h"
 
 /*
  Parameters for program
@@ -25,12 +26,21 @@ USA.
    --id   file - Identify file
    --language name - Language name to use for identifying things 
    --libdir name - Base directory for data files
+   --version
+   --help
  */
 
 stats *initialize( char *libdir, char *language, char *file, int verbose );
 
+void print_version()
+{
+  std::cout << PROJECTNAME << " version " << PROJECTVER << std::endl;
+  std::cout << "Copyright @ 2003 Robert Sandilands <rsandila@netscape.net> License: LGPL" << std::endl << std::endl;
+}
+
 void print_usage( char *argv0 )
 {
+  print_version();
   std::cerr << "Usage: " << argv0 << "[--stat file|--id file] [--language name] [--libdir location]" << std::endl;
   std::cerr << "\tEither --stat or --id must always be defined." << std::endl;
   std::cerr << "\t\t--stat prints statistics of file, --id identifies file" << std::endl;
@@ -39,6 +49,8 @@ void print_usage( char *argv0 )
   std::cerr << "\t--libdir specifies the location of the data files. " << std::endl << "\t\t";
   std::cerr << scriptid_default_lib_dir;
   std::cerr << " is the default." << std::endl;
+  std::cerr << "\t--help to see this screen" << std::endl;
+  std::cerr << "\t--version to see the version number" << std::endl;
 }
 
 int parse_param( int argc, char **argv, char **stat, char **id, char **language, char **libdir )
@@ -81,6 +93,16 @@ int parse_param( int argc, char **argv, char **stat, char **id, char **language,
 	  cnt+=1;
 	  continue;
 	}
+      if (!strcmp( argv[cnt], "--help" ))
+	{
+	  print_usage( argv[0] );
+	  return( -1 );
+	}
+      if (!strcmp( argv[cnt], "--version" ))
+	{
+	  print_version();
+	  return( -1 );
+	}
       std::cerr << "Unknown parameter " << argv[cnt] << std::endl;
       print_usage( argv[0] );
       return( -1 );
@@ -120,7 +142,7 @@ int main( int argc, char **argv )
 
   if (parse_param( argc, argv, &stat, &id, &language, &libdir ))
     {
-      return( 1 );
+      return( -1 );
     }
   if (stat)
     {
@@ -147,6 +169,8 @@ int main( int argc, char **argv )
     }
   if (id)
     {
+      char scriptname[1024];
+
       result=isTextFile( id );
       if (result<0)
 	{
@@ -157,6 +181,23 @@ int main( int argc, char **argv )
 	{
 	  std::cerr << id << " is a binary file." << std::endl;
 	  return( 0 );
+	}
+      result=isHTMLwithScript( id, scriptname, 1024 );
+      if (result<0)
+	{
+	  std::cerr << id << " caused error in isHTMLwithScript" << std::endl;
+	}
+      if (result>0)
+	{
+	  std::cout << "HTML with script language " << scriptname << " detected." << std::endl;
+	  if (strcasestr( scriptname, language ))
+	    {
+	      return( 1 );
+	    }
+	  else
+	    {
+	      return( 0 );
+	    }
 	}
       result=identify( libdir, language, id, 1 );
       return( result );

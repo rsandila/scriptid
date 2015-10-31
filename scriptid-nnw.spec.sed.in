@@ -35,6 +35,9 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/lib/@PROJECTNAME@/vbscript.nnw
 
 %changelog
+* Wed Feb 27 2003 Robert Sandilands <rsandila@netscape.net>
+- Due to a serious bug in the way statistics were generated, the
+  neural network weights had to be retrained from scratch
 * Wed Feb 26 2003 Robert Sandilands <rsandila@netscape.net>
 - Added some .asp samples for accurate .asp detection
 * Fri Feb 21 2003 Robert Sandilands <rsandila@netscape.net>

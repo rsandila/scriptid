@@ -117,6 +117,23 @@ int do_id( char *libdir, char *language, stats *id, int verbose )
   for (int cnt=0;cnt<num_elem;cnt++)
     inp[6+cnt]=h[cnt];
   id->freeReservedWordsHistogram( h );
+  if (verbose>1)
+    {
+      int line;
+      line=0;
+      std::cout << "Neural Net Input: " << std::endl;
+      for (int cnt=0;cnt<INPUT_SIZE;cnt++)
+	{
+	  std::cout << (double)inp[cnt] << ", ";
+	  line+=1;
+	  if (line>7)
+	    {
+	      line=0;
+	      std::cout << std::endl;
+	    }
+	}
+      std::cout << std::endl;
+    }
   trainer->run( inp, &outp );
   if (verbose)
     {
@@ -186,6 +203,90 @@ extern "C" int isTextFile( char *fname )
   return( 1 );
 }
 
+extern "C" int isHTMLwithScript( char *fname, char *scriptname, unsigned scriptname_length )
+{
+  FILE *inp;
+  char *tmppos;
+  char *language;
+  char *typel;
+  char *fbuf;
+  long fsize;
+  long read;
 
+  inp=fopen( fname, "rb" );
+  if (!inp) return( -1 );
+  fsize=ftell( inp );
+  fseek( inp, 0L, SEEK_END );
+  fsize=ftell( inp ) - fsize;
+  fseek( inp, 0L, SEEK_SET );
+  fbuf=new char[fsize+1];
+  if (!fbuf) { fclose( inp ); return( -1 ); };
+  read=fread( fbuf, 1, fsize, inp );
+  fclose( inp );
+  if (read!=fsize)
+    {
+      delete []fbuf;
+      return( -1 );
+    }
+  if (strcasestr( fbuf, "<html" ) && (strcasestr( fbuf, "<body" ) || strcasestr( fbuf, "<head" )))
+    { // most likely html
+      tmppos=strcasestr( fbuf, "<script " );
+      if (tmppos)
+	{ // contains some script
+	  language=strcasestr( tmppos, "language=" );
+	  typel=strcasestr( tmppos, "type=" );
+	  if (typel)
+	    {
+	      typel+=5;
+	      tmppos=typel;
+	      if ((*tmppos)=='"') { tmppos+=1; typel+=1; };
+	      while ((isalpha( *tmppos ) || (*tmppos)=='/') && (*tmppos)!=0) tmppos+=1;
+	      if (!(*tmppos))
+		{
+		  delete []fbuf;
+		  return( 0 );
+		}
+	      if ((tmppos - typel+1)>scriptname_length)
+		{
+		  delete []fbuf;
+		  return( -1 );
+		}
+	      memset( scriptname, 0, scriptname_length );
+	      memcpy( scriptname, typel, tmppos - typel );
+	      delete []fbuf;
+	      return( 1 );
+	    }
+	  if (language)
+	    {
+	      language+=9;
+	      tmppos=language;
+	      if ((*tmppos)=='"') { tmppos+=1; language+=1; };
+	      while ((isalpha( *tmppos ) || (*tmppos)=='/') && (*tmppos)!=0) tmppos+=1;
+	      if (!(*tmppos))
+		{
+		  delete []fbuf;
+		  return( 0 );
+		}
+	      if ((tmppos - language+1)>scriptname_length)
+		{
+		  delete []fbuf;
+		  return( -1 );
+		}
+	      memset( scriptname, 0, scriptname_length );
+	      memcpy( scriptname, language, tmppos - language );
+	      delete []fbuf;
+	      return( 1 );
+	    }
+	  // if neither language or type specified? Most likely microsoft, so it probably contains vbscript
+	  delete []fbuf;
+	  snprintf( scriptname, scriptname_length, "unknown" );
+	  return( 1 );
+	}
+      delete []fbuf;
+      return( 0 );
+    }
+  delete []fbuf;
+  return( 0 );
+}
 
 

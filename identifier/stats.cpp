@@ -64,19 +64,13 @@ stats::stats( std::string basedir, std::string language, std::string file )
       tmpchr=new char[wordtmp.size()+1];
       if (!tmpchr) return;
       strcpy( tmpchr, wordtmp.c_str() );
-      //      std::cout << "Adding " << tmpchr << std::endl;
       reservedword_histogram.insert( std::pair<char *,long>( tmpchr, 0 ) );
-      //      std::cout << "size = " << reservedword_histogram.size() << std::endl;
     }
-  /*  std::cout << "size = " << reservedword_histogram.size() << std::endl;
-      mait=reservedword_histogram.begin();
-      while (mait!=reservedword_histogram.end())
-      {
-      std::cout << (*mait).first << " " << (*mait).second << std::endl;
-      mait++;
-      }
-      std::cout << "-0-----------" << std::endl;
-  */
+  if (rw->getNumReservedWords()!=reservedword_histogram.size())
+    {
+      std::cerr << rwname << " contains duplicate words! " << rw->getNumReservedWords() << " vs. " << reservedword_histogram.size() << std::endl;
+    return;
+    }
   for (int cnt=0;cnt<parser->getNumUniqueWords();cnt++)
     {
       result=parser->getUniqueWord( cnt, &wordtmp );
@@ -102,22 +96,10 @@ stats::stats( std::string basedir, std::string language, std::string file )
 		  std::cerr << "Really weird thing happened with reserved words" << std::endl;
 		  return;
 		}
-	      //	      std::cout << "mait " << (*mait).first << " " << (*mait).second << std::endl;
 	      (*mait).second+=1;
-	      //	      std::cout << "isReservedWord::" << wordtmp << " " << reservedword_histogram[ (char *)(wordtmp.c_str()) ] << std::endl;
-	      //	      reservedword_histogram[ wordtmp ]=num;
 	    }
 	}
     }
-  /*
-    std::map<char *,long,egstr>::iterator mit;
-    mit=reservedword_histogram.begin();
-    while (mit!=reservedword_histogram.end())
-    {
-    std::cout << "first = " << (*mit).first << " second = " << (*mit).second << std::endl;
-    mit++;
-    }
-  */
   if (parser->getNumWords())
     {
       reserved_word_ratio=(double)((double)num_reserved_words/(double)parser->getNumWords());
@@ -159,7 +141,7 @@ int stats::getReservedWordsHistogram( unsigned *num_elem, double **histo )
   
   if (!isOk() || !num_elem || !histo) return( -1 );
   *histo=NULL;
-  *num_elem=rw->getNumReservedWords();
+  *num_elem=reservedword_histogram.size();
   x=new double[*num_elem];
   if (!x) return( -1 );
   if (reservedword_histogram.empty())
@@ -175,10 +157,12 @@ int stats::getReservedWordsHistogram( unsigned *num_elem, double **histo )
   total=0.0;
   for (unsigned cnt=0;cnt<*num_elem;cnt++)
     {
+      //      std::cout << (*mit).first << ", " << (*mit).second << std::endl;
       x[cnt]=(double)((*mit).second);
       total+=x[cnt];
       mit++;
     }
+  //  std::cout << "total = " << total << std::endl;
   if (total)
     {
       for (unsigned cnt=0;cnt<*num_elem;cnt++)

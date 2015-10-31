@@ -171,19 +171,20 @@ float nnwork::train (float data [], float desired [], float max_MSE, float eta, 
   run (data, output);
 		
 // Firstly calculate the output layer error terms
-  err=0.0;
 
   for (k = 0, MSE = 0; k < output_size; k++) 
     {
       owdk = desired [k] - output [k];
       tmpfl = output[k];
 
-      err += fabsf( owdk );
+      //      err += fabsf( owdk );
       MSE += owdk * owdk;      
       owdk *= tmpfl * (1 - tmpfl);
       output_weight_delta [k] = owdk;
     }
-	
+
+  err = MSE;
+
   if (MSE > MSE_max)
     {
       

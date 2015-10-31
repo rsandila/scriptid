@@ -10,7 +10,7 @@ AC_SUBST(VERSION)
 
 dnl Set values
 PROJECTNAME="scriptid"
-VERSION="0.0.2"
+VERSION="0.0.3"
 
 dnl Test compilers
 AC_LANG_CPLUSPLUS
@@ -32,10 +32,10 @@ AC_CHECK_HEADERS(cstdlib,[],AC_ERROR(You need the STL include files: cstdlib))
 AC_CHECK_HEADERS(algorithm,[],AC_ERROR(You need the STL include files: algorithm))
 
 ACTIONS=[true]
-CPPFLAGS=["-g -O3 -fstrength-reduce -frerun-loop-opt -fexpensive-optimizations -funroll-loops"]
+CPPFLAGS=["-g -O3 -fstrength-reduce -frerun-loop-opt -fexpensive-optimizations -funroll-loops -Wall -Wdisabled-optimization -finline-functions -ffast-math"]
 
 dnl List of Makefiles
-makefilelist=["Makefile identifier/Makefile nn/Makefile data/Makefile scriptid.spec scriptid-nnw.spec.sed"]
+makefilelist=["Makefile identifier/Makefile nn/Makefile data/Makefile scriptid.spec scriptid-nnw.spec.sed version.h"]
 
 dnl Check for required programs
 AC_PATH_PROG(FASTDEP, fastdep, [])
@@ -45,6 +45,7 @@ if test "$FASTDEP" = ""; then
 fi
 
 AC_ARG_ENABLE(timing, [--enable-timing - This makes the learn process print out NN Mflops and time per learn cycle.], [CPPFLAGS="$CPPFLAGS -D__TIMING__"],[])
+AC_ARG_ENABLE(randomlearn, [--enable-randomlearn - All data is presented to the NN learning phase in random order.], [CPPFLAGS="$CPPFLAGS -D__RANDOM_ORDER__"],[])
 
 dnl Do the final stuff
 AC_OUTPUT($makefilelist

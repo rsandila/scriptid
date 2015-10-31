@@ -19,11 +19,11 @@ USA.
 #ifndef __NN_PARAM_H__
 #define __NN_PARAM_H__
 
-#define INPUT_SIZE 275
+#define INPUT_SIZE 272
 #define OUTPUT_SIZE 1
 #define MIDDLE_SIZE 60
-#define LEARN_ERROR 0.05 
-#define DELTA  1e-10
+#define LEARN_ERROR 0.05
+#define DELTA  1e-6
 #define GOODNAME "goodexample.csv"
 #define BADNAME "badexample.csv"
 

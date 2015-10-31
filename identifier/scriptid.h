@@ -46,4 +46,22 @@ extern "C" int identify( char *libdir, char *language, char *file, int verbose )
     -1 - Error 
  */
 extern "C" int isTextFile( char *fname );
+
+/*
+ This function is used to determine whether a file is html with script inside it.
+ HTML is supposed to follow certain standards. This function can be easily fooled.
+ scriptid.cpp should detect false positive.
+
+ Parameters:
+    fname - The full path to the file to be checked
+    scriptname - The name of the scripting language detected
+    scriptname_length - The length of the previous buffer
+    
+ Return Values:
+    0 - No script
+    1 - HTML with script
+   -1 - Error
+ */
+extern "C" int isHTMLwithScript( char *fname, char *scriptname, unsigned scriptname_length );
+
 #endif

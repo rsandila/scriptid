@@ -17,7 +17,6 @@ CDate
 CDbl
 Chr
 ChrB
-ChrW 
 ChrW
 CInt
 Class
@@ -264,6 +263,4 @@ Write
 WriteLine
 Xor
 Year
-for
-each
 wscript

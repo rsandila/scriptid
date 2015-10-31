@@ -51,7 +51,7 @@ pieces.
 Please look at the AUTHORS file.
 
 Additional credit has to be given to Daniel Franklin
-(daniel@ieee.uow.edu.au) for his libneural 
+(d.franklin@ieee.org) for his libneural
 (URL: http://ieee.uow.edu.au/~daniel/software/libneural/). I modified
 his code for use in scriptid. I did some speed optimizations and
 modified the way the network learned to be of more use to my specific case.
@@ -107,6 +107,8 @@ Parameters for program:
    --id   file - Identify file
    --language name - Language name to use for identifying things 
    --libdir name - Base directory for data files
+   --version - Prints out version number and exit
+   --help - Prints out usage and exit
 
 Either --stat or --id must always be defined. 
 
@@ -122,7 +124,10 @@ output of the --stat command. In this mode it will return non-zero on error.
 
 If --id is provided it will load the specified file and use the neural
 network to identify it either as script or as text. In this mode it
-will return 0 for a text file, 1 for a script and anything else for an error.
+will return 0 for a text file, 1 for a script and anything else for an
+error. If an HTML file with scripting is detected, it will return 1 if
+the language name can be found in the scripting language specified. It
+will return 0 if another language was detected.
 
 11.2. libscriptid
 -----------------
@@ -162,6 +167,22 @@ It can be used to filter files before identify is called
      0 - Not text
      1 - Text
     -1 - Error
+
+extern "C" int isHTMLwithScript( char *fname, char *scriptname, unsigned scriptname_length );
+
+This function is used to determine whether a file is HTML with script inside it.
+HTML is supposed to follow certain standards. This function can be easily fooled.
+scriptid.cpp should detect false positive.
+
+Parameters:
+    fname - The full path to the file to be checked
+    scriptname - The name of the scripting language detected
+    scriptname_length - The length of the previous buffer
+    
+Return Values:
+    0 - No script
+    1 - HTML with script
+   -1 - Error
 
 The function definitions can be found in scriptid.h which can be found
 in /usr/local/include.
@@ -247,9 +268,10 @@ For installation purposes you have to rename your best .nnw file to
 vbscript.nnw in the "nn" subdirectory.
 
 The current default is that the data is presented to the neural
-network in random order. This seems to provide for better learning
-speed from the network. But it does make it difficult to determine
-whether the network is learning or not, as the error total seems to
-jump around a lot. This can be especially confusing on training from
-scratch. There is a define at the top of learn.cpp that can be used to
-switch this behavior off.
+network in the order it is in the data files. It does seem to be
+better to present this information in a random order, but this does
+seem to make it more difficult to predict whether the network is
+learning anything or not. This can be especially confusing on training from
+scratch. There is a switch for configure to enable random training. It
+seems to be more useful to enable random learning when the error is small.
+

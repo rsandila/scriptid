@@ -1,7 +1,15 @@
+* Thu Feb 27 2003 Robert Sandilands <rsandila@netscape.net>
+- Added test for HTML with scripting languages. This follows a fixed
+  format and it is better to have a deterministic test for it.
+- Changed the way the error is calculated when learning. Speed
+  optimization.
+- Fixed serious bug in statistics gathering class that did not detect
+  multiple occurrences of a reserved word.
+- Added option for randomized learning in nn/learn.
+- Added more compiler flags for better optimization.
 * Wed Feb 26 2003 Robert Sandilands <rsandila@netscape.net>
 - Added some .asp samples for accurate .asp detection
 - Added detection of text files to scriptid utility
 - Added API function in libraries to detect text files
 * Fri Feb 21 2003 Robert Sandilands <rsandila@netscape.net>
 - Initial Release
-
